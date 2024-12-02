@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from gtin.validator import *
+
 #%%
 sample = None
 input_url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/exports/json?lang=fr&timezone=Europe%2FBerlin'
@@ -24,14 +25,14 @@ df_off = df_off[df_off['gtin_valid'] == True]
 
 #%%
 # Change the gtin column to int
-# df_off['gtin'] = df_off['gtin'].astype('Int64')
+df_off['gtin'] = df_off['gtin'].astype(str)
 #%%
 # Load the json file to a dataframe
 df_recall = pd.read_json('etl/input/recall.json')
 #%%
 # Add a column to the dataframe to check if the GTIN is valid
 df_recall['gtin_valid'] = df_recall['gtin'].apply(is_valid_GTIN)
-df_recall['gtin'] = df_recall['gtin'].astype('Int64')
+df_recall['gtin'] = df_recall['gtin'].astype(str)
 # Filter OFF data with GTIN from recall data
 df_off = df_off[df_off['gtin'].isin(df_recall['gtin'])]
 
@@ -44,6 +45,7 @@ def get_product_name(gtin):
     except:
         return None
 
+
 # Add a column to the dataframe to get the product name
 df_recall['product_name_off'] = df_recall['gtin'].apply(get_product_name)
 
@@ -55,4 +57,3 @@ df_recall_alim = df_recall_alim[df_recall_alim['gtin_valid'] == True]
 #%%
 # Save the dataframe to a csv file
 df_recall_alim.to_csv('etl/output/recall_alim.csv', index=False)
-
