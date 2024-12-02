@@ -125,6 +125,10 @@ def classify_risque(risque):
 # Apply the function to the risques_encourus column
 df_recall_depart['risque_class'] = df_recall_depart['risques_encourus'].apply(classify_risque)
 
+# Save file to jsonl
+df_recall_depart['key'] = df_recall_depart['gtin'] + '--' + df_recall_depart['id']
+df_recall_depart.to_json('etl/output/recall_depart.jsonl', orient='records', lines=True)
+
 #%%
 import matplotlib.pyplot as plt
 # Visualize the data on a map
