@@ -49,6 +49,24 @@
 		  text-decoration: none;
 		  cursor: pointer;
 		}
+
+    #popupwide h2 {
+        color: red;
+        font-weight: bold;
+    }
+    #popupwide h3 {
+        text-align: center;
+    }
+    #popupwide h4 {
+        margin-top: 5px;
+		margin-bottom: 5px;
+        color: #333;
+    }
+    #popupwide p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
 		</style>
 </head>
 
@@ -243,19 +261,24 @@
 										<p><strong>Numéro de contact :</strong> ${escapeTags(matchingData.numero_contact)}</p>
 										<h4>Modalités de compensation</h4>
 										<p>${escapeTags(matchingData.modalites_de_compensation)}</p>
+										<br/>
+										<button onclick="window.open('${matchingData.lien_vers_affichette_pdf}', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+											Voir l'affichette PDF
+										</button>
 									`;
 
 									// append html content to the popup
 
 									popupContent.innerHTML += htmlContent;
 								} else {
-									popupContent.innerHTML += "No recall data found.";
-									resultElement.innerText = "No data found.";
+									popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
+									popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">Vérifier sur Rappel Conso</button>`;
+									resultElement.innerText = "Aucune alerte connue concernant ce produit.";
 								}
 							} else {
-								popupContent.innerHTML += "No recall data found.";
-
-								resultElement.innerText = "No data found.";
+								popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
+								popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">Vérifier sur Rappel Conso</button>`;
+								resultElement.innerText = "Erreur.";
 							}
 						})
 						.catch((error) => {
