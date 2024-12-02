@@ -2,331 +2,295 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-
-
-	<title>lecteur de code barre</title>
-	<link rel="shortcut icon" href="#" />
-	<script src="zxing_reader.js"></script>
-	<style>
-		body {font-family: Arial, Helvetica, sans-serif;}
-
-		/* The Modal (background) */
-		.modal {
-		  display: none; /* Hidden by default */
-		  position: fixed; /* Stay in place */
-		  z-index: 1; /* Sit on top */
-		  padding-top: 100px; /* Location of the box */
-		  left: 0;
-		  top: 0;
-		  width: 100%; /* Full width */
-		  height: 100%; /* Full height */
-		  overflow: auto; /* Enable scroll if needed */
-		  background-color: rgb(0,0,0); /* Fallback color */
-		  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-		}
-
-		/* Modal Content */
-		.modal-content {
-		  background-color: #fefefe;
-		  margin: auto;
-		  padding: 20px;
-		  border: 1px solid #888;
-		  width: 80%;
-		}
-
-		/* The Close Button */
-		.close {
-		  color: #aaaaaa;
-		  float: right;
-		  font-size: 28px;
-		  font-weight: bold;
-		}
-
-		.close:hover,
-		.close:focus {
-		  color: #000;
-		  text-decoration: none;
-		  cursor: pointer;
-		}
-
+  <meta charset="utf-8">
+  <title>Lecteur de Code Barre</title>
+  <link rel="shortcut icon" href="#" />
+  <script src="zxing_reader.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
     #popupwide h2 {
-        color: red;
-        font-weight: bold;
-    }
-    #popupwide h3 {
-        text-align: center;
-    }
-    #popupwide h4 {
-        margin-top: 5px;
-		margin-bottom: 5px;
-        color: #333;
-    }
-    #popupwide p {
-        font-size: 14px;
-        line-height: 1.5;
+      color: red;
+      font-weight: bold;
     }
 
-		</style>
+    #popupwide h3 {
+      text-align: center;
+    }
+
+    #popupwide h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    #popupwide p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
 </head>
 
-<body style="text-align: center">
-		<!-- The Modal -->
-		<div id="myModal" class="modal">
+<body class="text-center container mt-5">
+  <!-- The Modal -->
+  <div id="myModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Produit Information</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="popupwide">Some text in the Modal..</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-			<!-- Modal content -->
-			<div class="modal-content">
-			<span class="close">&times;</span>
-			<div id="popupwide">Some text in the Modal..</div>
-			</div>
+  <h2 class="mb-4">Lecteur de Code Barre</h2>
 
-		</div>
-	<h2>lecteur de code barre</h2>
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="cameraSelector" class="form-label">Camera:</label>
+        <select id="cameraSelector" class="form-select">
+          <option value="user">Front Camera</option>
+          <option value="environment">Back Camera</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="format" class="form-label">Format:</label>
+        <select id="format" class="form-select">
+          <option value="" selected>Any</option>
+          <option value="Aztec">Aztec</option>
+          <option value="Code39">Codabar</option>
+          <option value="CODE_39">Code39</option>
+          <option value="Code93">Code93</option>
+          <option value="Code128">Code128</option>
+          <option value="DataMatrix">DataMatrix</option>
+          <option value="DataBar">DataBar</option>
+          <option value="DataBarExpanded">DataBarExpanded</option>
+          <option value="DataBarLimited">DataBarLimited</option>
+          <option value="DXFilmEdge">DXFilmEdge</option>
+          <option value="EAN8">EAN-8</option>
+          <option value="EAN13">EAN-13</option>
+          <option value="ITF">ITF</option>
+          <option value="PDF417">PDF417</option>
+          <option value="QRCode">QRCode</option>
+          <option value="MicroQRCode">Micro QRCode</option>
+          <option value="RMQRCode">rMQR Code</option>
+          <option value="UPCA">UPC-A</option>
+          <option value="UPCE">UPC-E</option>
+          <option value="LinearCodes">Linear Codes</option>
+          <option value="MatrixCodes">Matrix Codes</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="mode" class="form-label">Mode:</label>
+        <select id="mode" class="form-select">
+          <option value="true" selected>Normal</option>
+          <option value="false">Fast</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-	Camera :
-	<select id="cameraSelector">
-		<option value="user">Front Camera</option>
-		<option value="environment">Back Camera</option>
-	</select>
-	&nbsp;&nbsp;
+  <canvas id="canvas" width="640" height="480" class="border mb-4"></canvas>
 
-	Format :
-	<select id="format">
-		<option value="" selected="">Any</option>
-		<option value="Aztec">Aztec</option>
-		<option value="Code39">Codabar</option>
-		<option value="CODE_39">Code39</option>
-		<option value="Code93">Code93</option>
-		<option value="Code128">Code128</option>
-		<option value="DataMatrix">DataMatrix</option>
-		<option value="DataBar">DataBar</option>
-		<option value="DataBarExpanded">DataBarExpanded</option>
-		<option value="DataBarLimited">DataBarLimited</option>
-		<option value="DXFilmEdge">DXFilmEdge</option>
-		<option value="EAN8">EAN-8</option>
-		<option value="EAN13">EAN-13</option>
-		<option value="ITF">ITF</option>
-		<option value="PDF417">PDF417</option>
-		<option value="QRCode">QRCode</option>
-		<option value="MicroQRCode">Micro QRCode</option>
-		<option value="RMQRCode">rMQR Code</option>
-		<option value="UPCA">UPC-A</option>
-		<option value="UPCE">UPC-E</option>
-		<option value="LinearCodes">Linear Codes</option>
-		<option value="MatrixCodes">Matrix Codes</option>
-	</select>
-	&nbsp;&nbsp;
+  <div id="result" class="alert alert-info">Scan result will be displayed here</div>
 
-	Mode :
-	<select id="mode">
-		<option value="true" selected="">Normal</option>
-		<option value="false">Fast</option>
-	</select>
-	<br /><br />
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+  <script>
+    var zxing = ZXing().then(function (instance) {
+      zxing = instance;
+    });
 
-	<canvas id="canvas" width="640" height="480"></canvas>
-	<br /><br />
+    const cameraSelector = document.getElementById("cameraSelector");
+    const format = document.getElementById("format");
+    const mode = document.getElementById("mode");
+    const canvas = document.getElementById("canvas");
+    const resultElement = document.getElementById("result");
 
-	<div id="result"></div>
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const video = document.createElement("video");
+    video.setAttribute("id", "video");
+    video.setAttribute("width", canvas.width);
+    video.setAttribute("height", canvas.height);
+    video.setAttribute("autoplay", "");
 
-	<script>
-		var zxing = ZXing().then(function (instance) {
-			zxing = instance;
-		});
+    let lastTime = 0; // Track the last time a request was made
 
-		const cameraSelector = document.getElementById("cameraSelector");
-		const format = document.getElementById("format");
-		const mode = document.getElementById("mode");
-		const canvas = document.getElementById("canvas");
-		const resultElement = document.getElementById("result");
+    function readBarcodeFromCanvas(canvas, format, mode) {
+      var imgWidth = canvas.width;
+      var imgHeight = canvas.height;
+      var imageData = canvas.getContext('2d').getImageData(0, 0, imgWidth, imgHeight);
+      var sourceBuffer = imageData.data;
 
-		const ctx = canvas.getContext("2d", { willReadFrequently: true });
-		const video = document.createElement("video");
-		video.setAttribute("id", "video");
-		video.setAttribute("width", canvas.width);
-		video.setAttribute("height", canvas.height);
-		video.setAttribute("autoplay", "");
+      if (zxing != null) {
+        var buffer = zxing._malloc(sourceBuffer.byteLength);
+        zxing.HEAPU8.set(sourceBuffer, buffer);
+        var result = zxing.readBarcodeFromPixmap(buffer, imgWidth, imgHeight, mode, format);
+        zxing._free(buffer);
+        return result;
+      } else {
+        return { error: "ZXing not yet initialized" };
+      }
+    }
 
-		let lastTime = 0; // Track the last time a request was made
+    function drawResult(code) {
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "red";
+      with (code.position) {
+        ctx.moveTo(topLeft.x, topLeft.y);
+        ctx.lineTo(topRight.x, topRight.y);
+        ctx.lineTo(bottomRight.x, bottomRight.y);
+        ctx.lineTo(bottomLeft.x, bottomLeft.y);
+        ctx.lineTo(topLeft.x, topLeft.y);
+        ctx.stroke();
+        ctx.fillText(code.text, (topLeft.x + bottomRight.x) / 2, (topLeft.y + bottomRight.y) / 2);
+      }
+    }
 
-		function readBarcodeFromCanvas(canvas, format, mode) {
-			var imgWidth = canvas.width;
-			var imgHeight = canvas.height;
-			var imageData = canvas.getContext('2d').getImageData(0, 0, imgWidth, imgHeight);
-			var sourceBuffer = imageData.data;
+    function escapeTags(htmlStr) {
+      return htmlStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
 
-			if (zxing != null) {
-				var buffer = zxing._malloc(sourceBuffer.byteLength);
-				zxing.HEAPU8.set(sourceBuffer, buffer);
-				var result = zxing.readBarcodeFromPixmap(buffer, imgWidth, imgHeight, mode, format);
-				zxing._free(buffer);
-				return result;
-			} else {
-				return { error: "ZXing not yet initialized" };
-			}
-		}
+    const processFrame = function () {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "green";
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, canvas.height);
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(canvas.width, 0);
+      ctx.stroke();
 
-		function drawResult(code) {
-			ctx.beginPath();
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = "red";
-			with (code.position) {
-				ctx.moveTo(topLeft.x, topLeft.y);
-				ctx.lineTo(topRight.x, topRight.y);
-				ctx.lineTo(bottomRight.x, bottomRight.y);
-				ctx.lineTo(bottomLeft.x, bottomLeft.y);
-				ctx.lineTo(topLeft.x, topLeft.y);
-				ctx.stroke();
-				ctx.fillText(code.text, (topLeft.x + bottomRight.x) / 2, (topLeft.y + bottomRight.y) / 2);
-			}
-		}
+      const code = readBarcodeFromCanvas(canvas, format.value, mode.value === 'true');
+      if (code.format) {
+        var popupContent = document.getElementById("popupwide");
 
-		function escapeTags(htmlStr) {
-			return htmlStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-		}
+        resultElement.innerText = code.format + ": " + escapeTags(code.text);
+        drawResult(code);
 
-		const processFrame = function () {
-			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-			ctx.beginPath();
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = "green";
-			ctx.moveTo(0, 0);
-			ctx.lineTo(0, canvas.height);
-			ctx.lineTo(canvas.width, canvas.height);
-			ctx.lineTo(canvas.width, 0);
-			ctx.stroke();
-
-			const code = readBarcodeFromCanvas(canvas, format.value, mode.value === 'true');
-			if (code.format) {
-				var popupContent = document.getElementById("popupwide");
-
-				resultElement.innerText = code.format + ": " + escapeTags(code.text);
-				//popupContent.innerHTML = "No data found.";
-				drawResult(code)
-
-				// Only make a request if 3 seconds have passed since the last one
-				if (Date.now() - lastTime > 3000) {
-
-					lastTime = Date.now();
-
-					// Fetch OpenFoodFacts data
-					fetch(`https://mirabelle.openfoodfacts.org/products/simplified.json?code__exact=${code.text}&_shape=array`)
-					.then(response => response.json())
-						.then(data => {
-							console.log(data);
-							// Display popup with product name and image_url (as image)
-							if (data.length > 0) {
-								const matchingData = data[0]
-								if (matchingData) {
-									let htmlContent = `
-										<h2 style="color: green; text-align: center;">PRODUIT</h2>
-										<h3 style="text-align: center;">${escapeTags(matchingData.product_name)}</h3>
-										<img src="${escapeTags(matchingData.image_url)}" style="display: block; margin: 0 auto; max-width: 100%; max-height: 200px;"/>
-									`;
-
-									popupContent.innerHTML = htmlContent;
-								} else {
-									resultElement.innerText = "No data found.";
-								}
-							} else {
-								resultElement.innerText = "No data found.";
-							}
-						})
-						.catch((error) => {
-							console.error('Error:', error);
-						});
-
-					// Fetch data from the API
-					fetch(`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`)
-						.then(response => response.json())
-						.then(data => {
-							console.log(data);
-							if (data.length > 0) {
-								var modal = document.getElementById("myModal");
-								const matchingData = data[0]
-								if (matchingData) {
-									// Display popup with the formatted result
-									let htmlContent = `
-										<h2 style="color: red; text-align: center;">RAPPEL DE PRODUIT</h2>
-										<h3 style="text-align: center;">${escapeTags(matchingData.marque_produit)}</h3>
-										<p><strong>Publication du :</strong> ${escapeTags(matchingData.date_publication)}</p>
-										<hr/>
-										<h4>Motif du rappel</h4>
-										<p>${escapeTags(matchingData.motif_rappel)}</p>
-										<h4>Risques encourus</h4>
-										<p>${escapeTags(matchingData.risques_encourus)}</p>
-										<h4>Conduite à tenir par le consommateur</h4>
-										<p>${escapeTags(matchingData.conduites_a_tenir_par_le_consommateur)}</p>
-										<h4>Contact</h4>
-										<p><strong>Numéro de contact :</strong> ${escapeTags(matchingData.numero_contact)}</p>
-										<h4>Modalités de compensation</h4>
-										<p>${escapeTags(matchingData.modalites_de_compensation)}</p>
-										<br/>
-										<button onclick="window.open('${matchingData.lien_vers_affichette_pdf}', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">
-											Voir l'affichette PDF
-										</button>
-									`;
-
-									// append html content to the popup
-
-									popupContent.innerHTML += htmlContent;
-								} else {
-									popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
-									popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">Vérifier sur Rappel Conso</button>`;
-									resultElement.innerText = "Aucune alerte connue concernant ce produit.";
-								}
-							} else {
-								popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
-								popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">Vérifier sur Rappel Conso</button>`;
-								resultElement.innerText = "Erreur.";
-							}
-						})
-						.catch((error) => {
-							console.error('Error:', error);
-						});
-
-
-				}
-				modal.style.display = "block";
+        // Always show modal when barcode is scanned
+		// dont create a new modal instance each time
+		//
+		if (!document.getElementById('myModal').classList.contains('show')) {
+        	var modal = new bootstrap.Modal(document.getElementById('myModal'));
 			}
 
-			requestAnimationFrame(processFrame);
-		};
 
-		const updateVideoStream = function (deviceId) {
-			if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+        // Only make a request if 3 seconds have passed since the last one
+        if (Date.now() - lastTime > 3000) {
+          lastTime = Date.now();
 
-			navigator.mediaDevices
-				.getUserMedia({ video: { facingMode: deviceId }, audio: false })
-				.then(function (stream) {
-					video.srcObject = stream;
-					video.setAttribute("playsinline", true);
-					video.play();
-					processFrame();
-				})
-				.catch(function (error) {
-					console.error("Error accessing camera:", error);
-				});
-		};
+          // Fetch OpenFoodFacts data
+          fetch(`https://mirabelle.openfoodfacts.org/products/simplified.json?code__exact=${code.text}&_shape=array`)
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              if (data.length > 0) {
+                const matchingData = data[0];
+                if (matchingData) {
+                  let htmlContent = `
+                    <h2 style="color: green; text-align: center;">PRODUIT</h2>
+                    <h3 style="text-align: center;">${escapeTags(matchingData.product_name)}</h3>
+                    <img src="${escapeTags(matchingData.image_url)}" style="display: block; margin: 0 auto; max-width: 100%; max-height: 200px;"/>
+                  `;
+                  popupContent.innerHTML = htmlContent;
+                } else {
+                  resultElement.innerText = "No data found.";
+                }
+              } else {
+                resultElement.innerText = "No data found.";
+              }
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
 
-		cameraSelector.addEventListener("change", function () {
-			updateVideoStream(this.value);
-		});
+          // Fetch data from the API
+          fetch(`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`)
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              if (data.length > 0) {
+                const matchingData = data[0];
+                if (matchingData) {
+                  let htmlContent = `
+                    <h2 style="color: red; text-align: center;">RAPPEL DE PRODUIT</h2>
+                    <h3 style="text-align: center;">${escapeTags(matchingData.marque_produit)}</h3>
+                    <p><strong>Publication du :</strong> ${escapeTags(matchingData.date_publication)}</p>
+                    <hr/>
+                    <h4>Motif du rappel</h4>
+                    <p>${escapeTags(matchingData.motif_rappel)}</p>
+                    <h4>Risques encourus</h4>
+                    <p>${escapeTags(matchingData.risques_encourus)}</p>
+                    <h4>Conduite à tenir par le consommateur</h4>
+                    <p>${escapeTags(matchingData.conduites_a_tenir_par_le_consommateur)}</p>
+                    <h4>Contact</h4>
+                    <p><strong>Numéro de contact :</strong> ${escapeTags(matchingData.numero_contact)}</p>
+                    <h4>Modalités de compensation</h4>
+                    <p>${escapeTags(matchingData.modalites_de_compensation)}</p>
+                    <br/>
+                    <button onclick="window.open('${matchingData.lien_vers_affichette_pdf}', '_blank')" class="btn btn-success">
+                      Voir l'affichette PDF
+                    </button>
+                  `;
 
-		var span = document.getElementsByClassName("close")[0];
-		var modal = document.getElementById("myModal");
-		span.onclick = function() {
-			modal.style.display = "none";
-		}
-
-		window.onclick = function(event) {
-			if (event.target == modal) {
-				modal.style.display = "none";
+                  popupContent.innerHTML += htmlContent;
+                } else {
+                  popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
+                  popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
+                  resultElement.innerText = "Aucune alerte connue concernant ce produit.";
+                }
+              } else {
+                popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
+                popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
+                resultElement.innerText = "Erreur.";
+              }
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+			if (!document.getElementById('myModal').classList.contains('show')) {
+				modal.show();
 			}
-		}
+        }
+      }
 
-		updateVideoStream();
-	</script>
+      requestAnimationFrame(processFrame);
+    };
+
+    const updateVideoStream = function (deviceId) {
+      if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: deviceId }, audio: false })
+        .then(function (stream) {
+          video.srcObject = stream;
+          video.setAttribute("playsinline", true);
+          video.play();
+          processFrame();
+        })
+        .catch(function (error) {
+          console.error("Error accessing camera:", error);
+        });
+    };
+
+    cameraSelector.addEventListener("change", function () {
+      updateVideoStream(this.value);
+    });
+
+    updateVideoStream();
+  </script>
 </body>
 
 </html>
