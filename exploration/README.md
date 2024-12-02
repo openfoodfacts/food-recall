@@ -6,17 +6,19 @@
 
 During the 2024's hackathon in Paris, the DGCCRF has provided a CSV to beta-test the evolution of their dataset.
 
+TL;DR: if you're lazy, jump on Mirabelle platform (the Open Food Facts' instance of datasette) to **explore and reuse the database** (with nice stats included!):
+https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie
+
+### Behind the scene (if you to understand and replay at home)
+
 Thanks to [csv2datasette](https://gist.github.com/CharlesNepote/3fdb8982dc873f34aa7c320bef580fe3), we can directly visualize and explore this CSV file. csv2datasette is a bash script which open CSV files directly in Datasette. It offers a number of options for reading and exploring CSV files, such as `--stats`, inspired by [WTFCsv](https://www.databasic.io/en/wtfcsv/).
 
 `--stats` option includes, for each column: the column name, the number of unique values, the number of filled rows, the number of missing values, the mininmum value, the maximum value, the median, the 10th, 25th, 50th, 75th and 90th centiles, the average, the sum, the shortest string, the longest string, the number of numeric values, the number of text values, the number of probable ISO dates, the top 3 frequent values.
 
-if you want to try it with the given CSV, you also have to deal with the "French" CSV, which means using ";" as column separators. This command line will do the trick:
+If you want to try it with the given CSV, you also have to deal with the "French" CSV, which means using ";" as column separators. This command line will do the trick:
 ```bash
 csv2datasette.sh --stats -s ";" rappelconso-v2-gtin-trie.csv
 ```
-
-If you're lazy, and you don't want to install datasette, you can just reuse the database on Mirabelle platform:
-https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie
 
 ## JSON API
 
