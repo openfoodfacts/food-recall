@@ -25,6 +25,13 @@ df_recall_depart = df_recall_depart.assign(department=df_recall_depart['zone_geo
 
 # Remove the rows where the department is not valid
 # df_recall_depart = df_recall_depart[df_recall_depart['department'].notna()]
+
+# Save the dataframe to a csv file
+df_recall_depart.to_csv('etl/output/recall_depart.csv', index=False)
+
+# Export to Json
+df_recall_depart.to_json('etl/output/recall_depart.json', orient='records')
+
 #%%
 # Plot the number of recalls per department on a map
 import geopandas as gpd
