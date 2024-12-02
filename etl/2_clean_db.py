@@ -125,3 +125,20 @@ def classify_risque(risque):
 # Apply the function to the risques_encourus column
 df_recall_depart['risque_class'] = df_recall_depart['risques_encourus'].apply(classify_risque)
 
+#%%
+import matplotlib.pyplot as plt
+# Visualize the data on a map
+# Explode per department
+df_recall_depart = df_recall_depart.explode('department')
+
+# Merge the dataframes
+departments_plot = departments.merge(df_recall_depart.groupby('department').size().reset_index(name='recalls'),
+                                left_on='code', right_on='department')
+
+# Plot the map
+fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+departments_plot.plot(column='recalls', ax=ax, legend=True)
+
+# Save the plot
+plt.savefig('etl/output/recalls_per_department.png')
+plt.show()
