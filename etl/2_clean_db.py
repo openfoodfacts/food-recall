@@ -1,6 +1,6 @@
 #%%
 import pandas as pd
-
+import geopandas as gpd
 # Load the data
 df_recall_alim = pd.read_csv('etl/output/recall_alim.csv')
 #%%
@@ -25,6 +25,14 @@ df_recall_depart = df_recall_depart.assign(department=df_recall_depart['zone_geo
 
 # Remove the rows where the department is not valid
 # df_recall_depart = df_recall_depart[df_recall_depart['department'].notna()]
+
+departments = gpd.read_file('etl/input/departements.geojson')
+
+# create a list with all departments
+departments_list = list(departments['code'])
+
+# if department is an empty list, replace it with departements_list
+df_recall_depart['department'] = df_recall_depart['department'].apply(lambda x: x if x else departments_list)
 
 # Save the dataframe to a csv file
 df_recall_depart.to_csv('etl/output/recall_depart.csv', index=False)
@@ -83,12 +91,37 @@ departments = gpd.read_file('etl/input/departements.geojson')
 
 # Create a dataframe with the number of recalls per depar
 
-# Merge the dataframes
-departments = departments.merge(df_recall_depart.groupby('department').size().reset_index(name='recalls'),
-                                left_on='code', right_on='department')
+# # Merge the dataframes
+# departments = departments.merge(df_recall_depart.groupby('department').size().reset_index(name='recalls'),
+#                                 left_on='code', right_on='department')
+#
+# # Plot the map
+# fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+# departments.plot(column='recalls', ax=ax, legend=True)
+# plt.show()
 
-# Plot the map
-fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-departments.plot(column='recalls', ax=ax, legend=True)
-plt.show()
+#%%
+# Focus on the risques_encourus
+
+# Get the count of risques_encourus
+risques_encourus = df_recall_depart['risques_encourus'].value_counts()
+
+# Classify the risques_encourus into 3 categories: 'biological', 'chemical', 'physical'
+# Create a dictionnary with key words to map
+
+key_words = {'bilogical': ['virus', 'bact', 'parasite', 'micro', 'biologique', 'biological'],
+             'allergen': ['allergen', 'allergène', 'allergi'],
+             'chemical': ['pesticide', 'contaminant', 'mycotoxin', 'metal', 'residue', 'contamination', 'oxyde'],
+             'physical': ['verre', 'plastic', 'foreign', 'metal', 'blessure']}
+
+# Create a function to classify the risques_encourus
+def classify_risque(risque):
+    for key, values in key_words.items():
+        for value in values:
+            if value in risque.lower():
+                return key
+    return 'other'
+
+# Apply the function to the risques_encourus column
+df_recall_depart['risque_class'] = df_recall_depart['risques_encourus'].apply(classify_risque)
 
