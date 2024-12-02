@@ -1,0 +1,12 @@
+x-api-common: &api-common
+  volumes:
+    # hack 
+    - ./food_recall:/opt/app/food_recall
+
+services:
+  api:
+    <<: *api-common
+
+  # service listening to redis for updates
+  updater:
+    <<: *api-common

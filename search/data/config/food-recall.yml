@@ -1,0 +1,64 @@
+indices:
+  "food-recall":
+    index:
+      id_field_name: recall_id
+      last_modified_field_name: publication_date
+      name: food-recall
+      number_of_replicas: 1
+      # FIXME move up as we get more data
+      number_of_shards: 1
+    fields:
+      recall_id:
+        required: true
+        type: keyword
+      original_id:
+        required: true
+        type: keyword
+      version:
+        required: true
+        type: keyword
+      original_link:
+        type: keyword
+      publication_date:
+        required: true
+        type: date
+      barcode:
+        required: true
+        type: keyword
+      # TODO this could be a taxonomized field instead
+      category:
+        type: keyword
+      sub_category:
+        type: keyword
+      brands:
+        type: text
+      references:
+        type: text
+      identification:
+        type: text
+      conditioning:
+        type: text
+      sold_start:
+        type: date
+      sold_end:
+        type: date
+      geography_text:
+        type: text
+      geo_region:
+        type: keyword
+      geo_dept:
+        type: keyword
+      resellers:
+        type: keyword
+    match_phrase_boost: 2.0
+    preprocessor: app.openfoodfacts.DocumentPreprocessor
+    # document_fetcher:
+    # result_processor: food_recall.FoodRecallResultProcessor
+    split_separator: ','
+    redis_stream_name: product_updates_off
+    primary_color: "#341100"
+    accent_color: "#ff8714"
+    supported_langs:
+    # a specific language to put the main language entry
+    - fr
+default_index: "food-recall"
