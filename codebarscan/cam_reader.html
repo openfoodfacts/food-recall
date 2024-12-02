@@ -2,6 +2,9 @@
 <html>
 
 <head>
+	<meta charset="utf-8">
+
+
 	<title>lecteur de code barre</title>
 	<link rel="shortcut icon" href="#" />
 	<script src="zxing_reader.js"></script>
@@ -61,10 +64,6 @@
 
 		</div>
 	<h2>lecteur de code barre</h2>
-	<!-- <p>
-		This is a simple demo of the wasm wrapper of <a href="https://github.com/zxing-cpp/zxing-cpp">zxing-cpp</a>
-		scanning for barcodes in a live video stream.
-	</p> -->
 
 	Camera :
 	<select id="cameraSelector">
@@ -114,7 +113,7 @@
 
 	<script>
 		var zxing = ZXing().then(function (instance) {
-			zxing = instance; // this line is supposedly not required but with current emsdk it is :-/
+			zxing = instance;
 		});
 
 		const cameraSelector = document.getElementById("cameraSelector");
@@ -129,6 +128,8 @@
 		video.setAttribute("width", canvas.width);
 		video.setAttribute("height", canvas.height);
 		video.setAttribute("autoplay", "");
+
+		let lastTime = 0; // Track the last time a request was made
 
 		function readBarcodeFromCanvas(canvas, format, mode) {
 			var imgWidth = canvas.width;
@@ -151,10 +152,6 @@
 			ctx.beginPath();
 			ctx.lineWidth = 4;
 			ctx.strokeStyle = "red";
-			// ctx.textAlign = "center";
-			// ctx.fillStyle = "#green"
-			// ctx.font = "25px Arial";
-			// ctx.fontWeight = "bold";
 			with (code.position) {
 				ctx.moveTo(topLeft.x, topLeft.y);
 				ctx.lineTo(topRight.x, topRight.y);
@@ -172,84 +169,115 @@
 
 		const processFrame = function () {
 			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-			// draw codebar scanning zone
 			ctx.beginPath();
 			ctx.lineWidth = 4;
-
 			ctx.strokeStyle = "green";
 			ctx.moveTo(0, 0);
 			ctx.lineTo(0, canvas.height);
 			ctx.lineTo(canvas.width, canvas.height);
 			ctx.lineTo(canvas.width, 0);
-
 			ctx.stroke();
 
 			const code = readBarcodeFromCanvas(canvas, format.value, mode.value === 'true');
 			if (code.format) {
+				var popupContent = document.getElementById("popupwide");
+
 				resultElement.innerText = code.format + ": " + escapeTags(code.text);
+				//popupContent.innerHTML = "No data found.";
 				drawResult(code)
-				// console.log(code.text);
-				// Get data from api using barcode
-				// code = 3760289220694
-				// url = https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=3760289220694&_shape=array
 
-				fetch(`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`)
+				// Only make a request if 3 seconds have passed since the last one
+				if (Date.now() - lastTime > 3000) {
+
+					lastTime = Date.now();
+
+					// Fetch OpenFoodFacts data
+					fetch(`https://mirabelle.openfoodfacts.org/products/simplified.json?code__exact=${code.text}&_shape=array`)
 					.then(response => response.json())
-					.then(data => {
-						console.log(data);
-						if (data.length > 0) {
-							// Display popup with the result
-							// CHeck if response is 200
-							resultElement.innerText = code.format + ": " + escapeTags(code.text);
+						.then(data => {
+							console.log(data);
+							// Display popup with product name and image_url (as image)
+							if (data.length > 0) {
+								const matchingData = data[0]
+								if (matchingData) {
+									let htmlContent = `
+										<h2 style="color: green; text-align: center;">PRODUIT</h2>
+										<h3 style="text-align: center;">${escapeTags(matchingData.product_name)}</h3>
+										<img src="${escapeTags(matchingData.image_url)}" style="display: block; margin: 0 auto; max-width: 100%; max-height: 200px;"/>
+									`;
 
-							// Get the modal
-// Display popup with the result
-var modal = document.getElementById("myModal");
-var popupContent = document.getElementById("popupwide");
+									popupContent.innerHTML = htmlContent;
+								} else {
+									resultElement.innerText = "No data found.";
+								}
+							} else {
+								resultElement.innerText = "No data found.";
+							}
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
 
-// Convert JSON to key-value pairs and render as an HTML table or list
-let htmlContent = "<table style='width: 100%; border-collapse: collapse;'>";
-htmlContent += "<thead><tr style='background: #f4f4f4;'><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Field</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Value</th></tr></thead>";
-htmlContent += "<tbody>";
+					// Fetch data from the API
+					fetch(`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`)
+						.then(response => response.json())
+						.then(data => {
+							console.log(data);
+							if (data.length > 0) {
+								var modal = document.getElementById("myModal");
+								const matchingData = data[0]
+								if (matchingData) {
+									// Display popup with the formatted result
+									let htmlContent = `
+										<h2 style="color: red; text-align: center;">RAPPEL DE PRODUIT</h2>
+										<h3 style="text-align: center;">${escapeTags(matchingData.marque_produit)}</h3>
+										<p><strong>Publication du :</strong> ${escapeTags(matchingData.date_publication)}</p>
+										<hr/>
+										<h4>Motif du rappel</h4>
+										<p>${escapeTags(matchingData.motif_rappel)}</p>
+										<h4>Risques encourus</h4>
+										<p>${escapeTags(matchingData.risques_encourus)}</p>
+										<h4>Conduite à tenir par le consommateur</h4>
+										<p>${escapeTags(matchingData.conduites_a_tenir_par_le_consommateur)}</p>
+										<h4>Contact</h4>
+										<p><strong>Numéro de contact :</strong> ${escapeTags(matchingData.numero_contact)}</p>
+										<h4>Modalités de compensation</h4>
+										<p>${escapeTags(matchingData.modalites_de_compensation)}</p>
+									`;
 
-// Loop through the JSON object and create rows for each key-value pair
-Object.entries(data[0]).forEach(([key, value]) => {
-    htmlContent += `<tr>
-        <td style='border: 1px solid #ddd; padding: 8px; font-weight: bold;'>${escapeTags(key)}</td>
-        <td style='border: 1px solid #ddd; padding: 8px;'>${escapeTags(value.toString())}</td>
-    </tr>`;
-});
+									// append html content to the popup
 
-htmlContent += "</tbody></table>";
+									popupContent.innerHTML += htmlContent;
+								} else {
+									popupContent.innerHTML += "No recall data found.";
+									resultElement.innerText = "No data found.";
+								}
+							} else {
+								popupContent.innerHTML += "No recall data found.";
 
-popupContent.innerHTML = htmlContent;
-modal.style.display = "block";
+								resultElement.innerText = "No data found.";
+							}
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
 
-						} else {
-							resultElement.innerText = code.format + ": " + escapeTags(code.text);
-						}
-					})
-					.catch((error) => {
-						console.error('Error:', error);
-					});
 
-				// Display popup with the result
-				resultElement.innerText = code.format + ": " + escapeTags(code.text);
-			} else {
-				// resultElement.innerText = "No barcode found";
+				}
+				modal.style.display = "block";
 			}
+
 			requestAnimationFrame(processFrame);
 		};
 
 		const updateVideoStream = function (deviceId) {
-			// To ensure the camera switch, it is advisable to free up the media resources
 			if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
 
 			navigator.mediaDevices
 				.getUserMedia({ video: { facingMode: deviceId }, audio: false })
 				.then(function (stream) {
 					video.srcObject = stream;
-					video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+					video.setAttribute("playsinline", true);
 					video.play();
 					processFrame();
 				})
@@ -261,19 +289,19 @@ modal.style.display = "block";
 		cameraSelector.addEventListener("change", function () {
 			updateVideoStream(this.value);
 		});
+
 		var span = document.getElementsByClassName("close")[0];
-
-		// When the user clicks on <span> (x), close the modal
+		var modal = document.getElementById("myModal");
 		span.onclick = function() {
-		modal.style.display = "none";
-		}
-
-		// When the user clicks anywhere outside of the modal, close it
-		window.onclick = function(event) {
-		if (event.target == modal) {
 			modal.style.display = "none";
 		}
+
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
 		}
+
 		updateVideoStream();
 	</script>
 </body>
