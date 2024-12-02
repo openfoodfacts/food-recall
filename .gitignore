@@ -1,5 +1,9 @@
 .idea/
 .DS_Store
+
+# ETL
+etl/input/
+etl/output/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
