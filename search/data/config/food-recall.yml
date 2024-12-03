@@ -43,7 +43,7 @@ indices:
       brands_text:
         full_text_search: true
         type: text
-      resellers_text:
+      retailers_text:
         full_text_search: true
         type: text
       brands:
@@ -70,7 +70,7 @@ indices:
       geo_district:
         type: keyword
         bucket_agg: true
-      resellers:
+      retailers:
         type: keyword
         bucket_agg: true
       off_code:

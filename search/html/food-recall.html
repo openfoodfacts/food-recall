@@ -220,7 +220,7 @@
                     <searchalicious-facets search-name="off">
                       <searchalicious-facet-terms search-name="off" name="risk_class"></searchalicious-facet-terms>
                       <searchalicious-facet-terms search-name="off" name="brands" ></searchalicious-facet-terms>
-                      <searchalicious-facet-terms search-name="off" name="resellers"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="retailers"></searchalicious-facet-terms>
                       <!--
                       <searchalicious-facet-terms search-name="off" name="category" show-other="true"></searchalicious-facet-terms>
                       -->
@@ -250,11 +250,12 @@
                                       />
                                     </div>
                                     <div part="data">
-                                      <b>${result.title}</b>
+                                      <b>${result.title}</b> - ${result.brands_text}
                                       <br>
-                                      <b>Marque:</b>${result.resellers_text}
+                                      <b>Vendu par:</b> ${result.retailers_text}
                                       <br>
-                                      <b>Vendu par:</b> ${result.resellers_text}
+                                      ${result.sold_start ? result.sold_start.replace(/^(\d+)-(\d+)-(\d+)(.*)$/, '$3/$2/$1') : ""}
+                                      - ${result.sold_end ? result.sold_end.replace(/^(\d+)-(\d+)-(\d+)(.*)$/, '$3/$2/$1') : ""}
                                     </div>
                                     <div
                                   </div>

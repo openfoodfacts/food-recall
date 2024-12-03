@@ -26,7 +26,7 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
         "sold_end": "date_date_fin_commercialisation",
         "geography_text": "zone_geographique_de_vente",
         "geo_district": "department",
-        "resellers_text": "distributeurs",
+        "retailers_text": "distributeurs",
         "category": "categorie_produit",
         "sub_category": "sous_categorie_produit",
         "off_brands_tags": "off_brands_tags",
@@ -48,6 +48,11 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
     def split_list(self, data, sep="|"):
         return [d.strip().lower() for d in data.split(sep)] if data is not None else None
 
+    def replace_bad_chars(self, data, *fields):
+        for field in fields:
+            if data.get("field"):
+                data[field] = data[field].replace("¤", ",")
+
     def preprocess(self, document: JSONType) -> FetcherResult:
         # no need to have a deep-copy here
         new_document: JSONType = {
@@ -62,9 +67,10 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
         for date_field in self.DATE_FIELDS:
             if new_document[date_field] is not None:
                 new_document[date_field] = self._normalize_date(new_document[date_field])
+        self.replace_bad_chars(new_document, "brands_text", "retailers_text")
         # brands is a list
         new_document["brands"] = self.split_list(new_document["brands_text"], ",")
-        new_document["resellers"] = self.split_list(new_document["resellers_text"], ",")
+        new_document["retailers"] = self.split_list(new_document["retailers_text"], ",")
         # some lists
         new_document["images"] = self.split_list(new_document["images"])
         return FetcherResult(status=FetcherStatus.FOUND, document=new_document)
