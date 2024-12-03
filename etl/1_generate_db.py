@@ -9,8 +9,8 @@ input_url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rap
 #%%
 response = requests.get(input_url)
 #%%
-with open('etl/input/recall.json', 'wb') as f:
-    f.write(response.content)
+with open('etl/input/recall.json', 'w', encoding='utf-8') as f:
+    f.write(response.content.decode('utf-8'))
 #%%
 # Read off data
 df_off = pd.read_csv('etl/input/en.openfoodfacts.org.products.csv',

@@ -53,27 +53,27 @@ departments = gpd.read_file('etl/input/departements.geojson')
 
 #%%
 # Create a function to find the best match
-# from sentence_transformers import SentenceTransformer
-# model = SentenceTransformer('all-mpnet-base-v2')
-#
-# d_embeddings = model.encode(list(departments['nom']))
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('all-mpnet-base-v2')
+
+d_embeddings = model.encode(list(departments['nom']))
 
 #%%
-# def find_best_match(name, threshold=0.8):
-#     # Find the best match
-#     q_embedding = model.encode([name])
-#     scores = (d_embeddings @ q_embedding.T).flatten()
-#     matches = scores.argsort()[::-1]
-#     match_score = scores[matches[0]]
-#     # Get the match with the highest score
-#     best_match = departments.iloc[matches[0]]['code']
-#
-#     if match_score < threshold:
-#         return None, None
-#     return best_match, match_score
-#
-#
-# find_best_match('Savoua')
+def find_best_match(name, threshold=0.8):
+    # Find the best match
+    q_embedding = model.encode([name])
+    scores = (d_embeddings @ q_embedding.T).flatten()
+    matches = scores.argsort()[::-1]
+    match_score = scores[matches[0]]
+    # Get the match with the highest score
+    best_match = departments.iloc[matches[0]]['code']
+
+    if match_score < threshold:
+        return None, None
+    return best_match, match_score
+
+
+find_best_match('Savoua')
 
 #%%
 # on df_recall_depart, if department is not found, find the best match of zone_geographique_de_vente with the department name
