@@ -1,7 +1,7 @@
 x-api-common: &api-common
   volumes:
-    # hack 
-    - ./food_recall:/opt/app/food_recall
+    # hack
+    - ./food_recall:/opt/search/app/food_recall
 
 services:
   api:
@@ -10,3 +10,12 @@ services:
   # service listening to redis for updates
   updater:
     <<: *api-common
+
+  es01:
+    ports:
+      - "${ES_EXPOSE}:9200"
+
+  search_frontend:
+    volumes:
+      # replace off file
+      - ./html/food-recall.html:/opt/search-a-licious/public/off.html

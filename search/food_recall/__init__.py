@@ -1,9 +1,10 @@
 from app.indexing import BaseDocumentPreprocessor
+from app._import import BaseDocumentFetcher
 
 from app._types import FetcherResult, FetcherStatus, JSONType
 
 
-class RappelConsoPreprocessor:
+class RappelConsoPreprocessor(BaseDocumentPreprocessor):
     """a preprocessor for RappelConso (french) data"""
 
     # gtin, numero_fiche, numero_version, nature_juridique_rappel, categorie_produit, sous_categorie_produit, marque_produit, 
@@ -18,7 +19,7 @@ class RappelConsoPreprocessor:
         "original_id": "numero_fiche",
         "version": "numero_version",
         "barcode": "gtin",
-        "publication_date": "",
+        "publication_date": "date_publication",
         "sold_start": "date_debut_commercialisation",
         "sold_end": "date_date_fin_commercialisation",
         "geography_text": "zone_geographique_de_vente",
@@ -30,6 +31,11 @@ class RappelConsoPreprocessor:
         "identification": "identification_produits",
         "conditioning": "conditionnements",
     }
+    DATE_FIELDS = ["publication_date", "sold_start", "sold_end"]
+
+    def _normalize_date(self, date):
+        # we jut need to add the T instead of the space
+        return date.replace(' ', 'T')
 
     def preprocess(self, document: JSONType) -> FetcherResult:
         # no need to have a deep-copy here
@@ -38,9 +44,20 @@ class RappelConsoPreprocessor:
             for new_key, orig_key in self.FIELD_TRANSLATION.items()
         }
         # build a unique id
-        new_document[recall_id] = f"{new_document['original_id']}--{new_document['barcode']}"
-
+        new_document["recall_id"] = f"{new_document['original_id']}--{new_document['barcode']}"
+        new_document["source"] = "rappelconso"
+        new_document["original_link"] = f"https://rappel.conso.gouv.fr/fiche-rappel/{new_document['original_id']}/Interne"
+        # normalize dates
+        for date_field in self.DATE_FIELDS:
+            if new_document[date_field] is not None:
+                new_document[date_field] = self._normalize_date(new_document[date_field])
+        # brands is a list
+        new_document["brands"] = [brand.strip().lower() for brand in new_document["brands"].split(",")]
         return FetcherResult(status=FetcherStatus.FOUND, document=new_document)
 
 
+class RappelConsoFetcher(BaseDocumentFetcher):
+    """a fetcher for RappelConso (french) data"""
 
+    def fetch_document(self, stream_name: str, item: JSONType) -> FetcherResult:
+        return FetcherResult(status=FetcherStatus.SKIP, document=None)

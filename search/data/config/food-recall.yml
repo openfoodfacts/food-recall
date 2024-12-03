@@ -17,6 +17,9 @@ indices:
       version:
         required: true
         type: keyword
+      source:
+        required: true
+        type: keyword
       original_link:
         type: keyword
       publication_date:
@@ -28,10 +31,13 @@ indices:
       # TODO this could be a taxonomized field instead
       category:
         type: keyword
+        bucket_agg: true
       sub_category:
         type: keyword
+        bucket_agg: true
       brands:
-        type: text
+        type: keyword
+        bucket_agg: true
       references:
         type: text
       identification:
@@ -46,16 +52,24 @@ indices:
         type: text
       geo_region:
         type: keyword
+        bucket_agg: true
       geo_dept:
         type: keyword
+        bucket_agg: true
       resellers:
         type: keyword
+    taxonomy:
+      sources: []
+      index:
+        number_of_replicas: 1
+        number_of_shards: 1
+        name: food_recall_taxonomy
     match_phrase_boost: 2.0
-    preprocessor: app.openfoodfacts.DocumentPreprocessor
-    # document_fetcher:
+    preprocessor: app.food_recall.RappelConsoPreprocessor
+    document_fetcher: app.food_recall.RappelConsoFetcher
     # result_processor: food_recall.FoodRecallResultProcessor
     split_separator: ','
-    redis_stream_name: product_updates_off
+    redis_stream_name: food_recall_updates
     primary_color: "#341100"
     accent_color: "#ff8714"
     supported_langs:

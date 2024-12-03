@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-lt-installed="true">
+  <head>
+    <meta charset="utf-8" />
+    <title>Search-a-licious - Open Food Facts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://static.openfoodfacts.org/css/dist/app-ltr.css?v=1695281325"
+      data-base-layout="true"
+    />
+    <script type="module" src="./search-a-licious.bundled.js"></script>
+    <style>
+      #content {
+        /* avoid sort by options to be hidden on a blank page */
+        min-height: 20em;
+      }
+      /* temporary inline styles to test CSS customization */
+      /* search bar styling */
+      
+      /* columns of search-bar must use flex so that we can center things vertically */
+      searchalicious-bar {
+        position:relative;
+        align-self: center;
+      }
+      searchalicious-bar {
+        padding-right: 0;
+      }
+      searchalicious-bar::part(input)::placeholder {
+        color: #666;
+      }
+      searchalicious-bar::part(input) {
+        width: 360px;
+        padding-bottom: .35rem;
+        padding-top: .35rem;
+        margin: 1px 0;
+        background-color: LightYellow !important;
+        box-shadow: none;
+        border-radius: 1000px 0px 0px 1000px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #ccc;
+        color: rgba(0,0,0,.75);
+      }
+      /* search results styling */
+      searchalicious-results::part(results), searchalicious-results::part(results-loading) {
+        list-style: none;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        margin: 0;
+        padding: 0;
+      }
+      searchalicious-results::part(li) {
+        margin-bottom: 12px;
+        height: auto;
+      }
+      searchalicious-results::part(outer_anchor) {
+        border-radius: 8px;
+        padding: 0;
+        background-color: #fff;
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        box-shadow: 0 4px 4px rgba(0,0,0,.25);
+        text-decoration: none !important;
+        color: black;
+      }
+      searchalicious-results::part(score) {
+        display: block;
+        color: #fff;
+        font-size: 1rem;
+        text-align: center;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding: 2px;
+        font-size: .8rem;
+      }
+      searchalicious-results::part(score good) {
+        background-color: #219653;
+        height: 20px;
+      }
+      searchalicious-results::part(infos) {
+        border-radius: 8px;
+        padding: 10px;
+        display: block;
+      }
+      searchalicious-results::part(image-div) {
+        height: 144px;
+        margin: 12px;
+      }
+     
+      searchalicious-results::part(image) {
+        object-fit: contain;
+        width: 100%;
+        height: 100%;
+      }
+      searchalicious-results::part(product-name) {
+        overflow: hidden;
+        padding-top: .75rem;
+        padding-bottom: .75rem;
+        height: 82px;
+      }
+      searchalicious-results::part(scores logo) {
+        height: 32px;
+        margin-right: .2rem;
+        margin-top: .2rem;
+      }
+      searchalicious-count {
+        --searchalicious-count-color: white;
+      }
+      searchalicious-sort {
+        --sort-options-color: rgb(52, 17, 0);
+        --sort-options-background-color: #f6f3f0;
+        --sort-options-hover-background-color: #BBBBBB;
+      }
+      searchalicious-sort::part(button) {
+        display: flex;
+        align-items: center;
+        border-color: #cfac9e;
+        border-radius: 1000px;
+        padding: .4em 1em;
+        border-style: solid;
+      }
+      searchalicious-sort::part(options) {
+        border: solid #cfac9e 1px;
+      }
+
+      .block_ristreto {
+        padding-left: 20%;
+        padding-right: 1rem;
+      }
+
+      .filterProducts, .filterProducts__buttons {
+        width: 100%;
+      }
+
+      .block_ristreto .end-block {
+        margin-left: auto;
+        /*position: absolute;*/
+        /*right: 1rem;*/
+        /*top: 50%;*/
+        /*transform: translateY(-50%);*/
+      }
+
+      searchalicious-reset-button {
+        margin-left: 1rem;
+      }
+    </style>
+  </head>
+  <body class="products_page">
+  <searchalicious-panel-manager>
+
+    <div id="page">
+      <div id="main_container" style="position: relative" class="block_latte">
+        <div
+                class="topbarsticky"
+                style="position: static; left: auto; width: 1496px"
+        >
+          <div class="contain-to-grid" id="offNav">
+            <nav class="top-bar" data-topbar="" role="navigation">
+              <ul class="title-area">
+                <li class="name">
+                  <div style="position: relative; max-width: 292px">
+                    <h1>Food Recall</h1>
+                  </div>
+                </li>
+              </ul>
+              <section class="top-bar-section">
+                <ul class="left" style="margin-right: 2rem">
+                  <li class="search-li">
+                    <searchalicious-bar name="off" boost-phrase page-size="24" langs="en,main">
+                    </searchalicious-bar>
+                    <searchalicious-button search-name="off"></searchalicious-button>
+                    <searchalicious-reset-button search-name="off"></searchalicious-reset-button>
+                  </li>
+                </ul>
+              </section>
+            </nav>
+          </div>
+        </div>
+
+
+        <div id="content" class="off-canvas-wrap block_latte" data-offcanvas="">
+          <div class="inner-wrap">
+            <a class="exit-off-canvas"></a>
+            <div class="main block_light">
+              <div id="main_column">
+                <div class="block short block_ristreto">
+                  <div class="">
+                    <div class="small-12 filterProducts">
+                      <div class="filterProducts__buttons">
+                        <div>
+                          <searchalicious-count search-name="off"></searchalicious-count>
+                        </div>
+                        <div>
+                          <searchalicious-sort search-name="off" auto-refresh>
+                            <span slot="label">Sort by ▿</span>
+                            <searchalicious-sort-field field="-publication_date">Last updates
+                            </searchalicious-sort-field>
+                            <searchalicious-sort-field field="-sold_end">Lastly sold
+                            </searchalicious-sort-field>
+                            </searchalicious-sort>
+                        </div>
+
+                        <div class="end-block">
+                          <searchalicious-toggle-charts></searchalicious-toggle-charts>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <searchalicious-layout-page search-name="off">
+                  <div slot="col-1">
+                    <searchalicious-facets search-name="off">
+                      <searchalicious-facet-terms search-name="off" name="brands" show-other="true"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="category" show-other="true"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="sub_category" show-other="true"></searchalicious-facet-terms>
+                    </searchalicious-facets>
+                  </div>
+                  <div slot="col-2">
+                    <div id="search_results" style="clear: left">
+                      <div id="products_tabs_content" class="tabs-content">
+                        <div class="tabs content active" id="products_all" style="padding-top: 0">
+                          <searchalicious-results class="off-search-results" search-name="off" search-id="code">
+                            <!-- template for each result -->
+                            <template slot="result" style="display: none">
+                              <li data-code="${result.code}" part="li">
+                                <a
+                                        href="${result.original_link}"
+                                        part="outer_anchor"
+                                >
+                                  <div part="infos">
+                                    <div part="data">
+                                      <b>identification: </b>${result.identification}
+                                      <br>
+                                      <b>resselers:</b> ${result.resselers}
+                                    </div>
+                                  </div>
+                                </a>
+                              </li>
+                            </template>
+                          </searchalicious-results>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <searchalicious-pages search-name="off">
+                      </searchalicious-pages>
+                    </div>
+                  </div>
+                  <div slot="col-3">
+                    <!-- Graphs inside -->
+                  </div>
+                </searchalicious-layout-page>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </searchalicious-panel-manager>
+
+  <script src="https://static.openfoodfacts.org/js/dist/modernizr.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/jquery.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/jquery-ui.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/hc-sticky.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/display.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/stikelem.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/scrollNav.js"></script>
+
+    <script src="vega5.js"></script>
+    <script>
+      const defaultImageUrl = 'https://world.openfoodfacts.org/images/icons/dist/packaging.svg';
+
+      function handleImageError(event) {
+          event.target.src = defaultImageUrl;
+      }
+  </script>
+    <script
+      src="https://static.openfoodfacts.org/js/dist/foundation.js"
+      data-base-layout="true"
+    ></script>
+    <script src="https://static.openfoodfacts.org/js/dist/jquery.cookie.js"></script>
+    <script src="https://static.openfoodfacts.org/js/dist/select2.min.js"></script>
+    <script>
+      $(document).foundation({
+        equalizer: {
+          equalize_on_stack: true,
+        },
+        accordion: {
+          callback: function (accordion) {
+            $(document).foundation('equalizer', 'reflow');
+          },
+        },
+      });
+    </script>
+
+  </body>
+  <style type="text/css">
+    /*
+ * OFF web app already load jquery-ui.css but it doesn't work properly with "dialog" function.
+ * We add the CSS this way so that the embedded, relatively linked images load correctly.
+ * (Use //ajax... so that https or http is selected as appropriate to avoid "mixed content".)
+ */
+
+    .ui-dialog {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 0.2em;
+      outline: 0;
+    }
+    .ui-dialog .ui-dialog-titlebar {
+      padding: 0.4em 1em;
+      position: relative;
+    }
+    .ui-dialog .ui-dialog-title {
+      float: left;
+      margin: 0.1em 0;
+      white-space: nowrap;
+      width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ui-dialog .ui-dialog-titlebar-close {
+      position: absolute;
+      right: 0.3em;
+      top: 50%;
+      width: 20px;
+      margin: -10px 0 0 0;
+      padding: 1px;
+      height: 20px;
+    }
+    .ui-dialog .ui-dialog-content {
+      position: relative;
+      border: 0;
+      padding: 0.5em 1em;
+      background: none;
+      overflow: auto;
+    }
+    .ui-dialog .ui-dialog-buttonpane {
+      text-align: left;
+      border-width: 1px 0 0 0;
+      background-image: none;
+      margin-top: 0.5em;
+      padding: 0.3em 1em 0.5em 0.4em;
+    }
+    .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+      float: right;
+    }
+    .ui-dialog .ui-dialog-buttonpane button {
+      margin: 0.5em 0.4em 0.5em 0;
+      cursor: pointer;
+    }
+
+    .ui-dialog .ui-resizable-n {
+      height: 2px;
+      top: 0;
+    }
+    .ui-dialog .ui-resizable-e {
+      width: 2px;
+      right: 0;
+    }
+    .ui-dialog .ui-resizable-s {
+      height: 2px;
+      bottom: 0;
+    }
+    .ui-dialog .ui-resizable-w {
+      width: 2px;
+      left: 0;
+    }
+    .ui-dialog .ui-resizable-se,
+    .ui-dialog .ui-resizable-sw,
+    .ui-dialog .ui-resizable-ne,
+    .ui-dialog .ui-resizable-nw {
+      width: 7px;
+      height: 7px;
+    }
+    .ui-dialog .ui-resizable-se {
+      right: 0;
+      bottom: 0;
+    }
+    .ui-dialog .ui-resizable-sw {
+      left: 0;
+      bottom: 0;
+    }
+    .ui-dialog .ui-resizable-ne {
+      right: 0;
+      top: 0;
+    }
+    .ui-dialog .ui-resizable-nw {
+      left: 0;
+      top: 0;
+    }
+    .ui-draggable .ui-dialog-titlebar {
+      cursor: move;
+    }
+    /** End of jquery-ui requirements **/
+
+    /* .row { width: 80% !important; margin: 0 0 !important; } */
+
+    /* Special color for barcode */
+    span[property='food:code'] {
+      color: Olive;
+    }
+
+    /* Enhancements to better distinguish sections: Product information, Ingredients and Nutriments facts */
+    #main_column > div > h2 {
+      margin-top: 1.6rem !important;
+      margin-bottom: 0.2rem !important;
+      border-bottom: 1px solid lightgrey;
+    }
+
+    #main_column {
+      padding-bottom: 0;
+    }
+
+    /* Special background color for all input fieds */
+    textarea,
+    .tagify,
+    input[type='text'] {
+      background-color: LightYellow !important;
+    }
+    input.nutriment_value {
+      background-color: LightYellow;
+    }
+    textarea:focus,
+    .tagify__input:focus,
+    .tagify:focus,
+    input[type='text']:focus,
+    input.nutriment_value:focus {
+      background-color: lightblue !important;
+    }
+
+    /* Small enhancements */
+    p {
+      margin-bottom: 0.6rem;
+    }
+    input[type='text'] {
+      margin: 1px 0;
+    } /* reduce vertical space between fields and notes */
+    .note,
+    .example {
+      margin: 1px 0;
+    }
+    label {
+      margin-top: 10px;
+    }
+    .data_table {
+      margin-top: 7px;
+    }
+    td {
+      line-height: 1rem;
+    }
+    input[type='checkbox'],
+    input[type='radio'] {
+      margin: 0;
+    }
+
+    /* ---------------- Nutrition facts ------------------------- */
+
+    .hidden {
+      display: none;
+    }
+
+    /* ingredients box alternative font */
+    textarea.monospace {
+      font-family: Consolas, Lucida Console, monospace;
+    }
+
+    .ul[id^='products_'].search_results a.with_barcode {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+  </style>
+</html>
