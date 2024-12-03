@@ -138,22 +138,22 @@ df_recall_depart.drop(columns=['risques_encourus_tot'], inplace=True)
 df_recall_depart.to_json('etl/output/recall_depart.jsonl', orient='records', lines=True)
 
 #%%
-import matplotlib.pyplot as plt
-# Visualize the data on a map
-# Explode per department
-df_recall_depart = df_recall_depart.explode('department')
-
-# Merge the dataframes
-departments_plot = departments.merge(df_recall_depart.groupby('department').size().reset_index(name='recalls'),
-                                left_on='code', right_on='department')
-
-# Plot the map
-fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-departments_plot.plot(column='recalls', ax=ax, legend=True)
-
-# Save the plot
-plt.savefig('etl/output/recalls_per_department.png')
-plt.show()
+# import matplotlib.pyplot as plt
+# # Visualize the data on a map
+# # Explode per department
+# df_recall_depart = df_recall_depart.explode('department')
+#
+# # Merge the dataframes
+# departments_plot = departments.merge(df_recall_depart.groupby('department').size().reset_index(name='recalls'),
+#                                 left_on='code', right_on='department')
+#
+# # Plot the map
+# fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+# departments_plot.plot(column='recalls', ax=ax, legend=True)
+#
+# # Save the plot
+# plt.savefig('etl/output/recalls_per_department.png')
+# plt.show()
 
 #%%
 # Get the count per zone_geographique
