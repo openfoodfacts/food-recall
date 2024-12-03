@@ -16,6 +16,7 @@ docker compose up -d
 ## Importing the data
 
 Get test data at https://drive.google.com/file/d/1iWpimLZ2XJTKDMA0pFbmY4KYbnAcMQoD/view?usp=share_link
+or generate a fresh set using the notebooks in [`etl/`](../etl) folder.
 
 copy in `data/recall_depart.jsonl`
 and import them.
