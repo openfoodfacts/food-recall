@@ -40,6 +40,9 @@ indices:
       title:
         full_text_search: true
         type: text
+      off_title:
+        full_text_search: true
+        type: text
       brands_text:
         full_text_search: true
         type: text

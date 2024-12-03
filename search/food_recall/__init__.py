@@ -20,6 +20,7 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
         "version": "numero_version",
         "barcode": "gtin",
         "title": "modeles_ou_references",
+        "off_title": "off_product_name",
         "publication_date": "date_publication",
         "original_link": "lien_vers_la_fiche_rappel",
         "sold_start": "date_debut_commercialisation",
@@ -67,7 +68,7 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
         for date_field in self.DATE_FIELDS:
             if new_document[date_field] is not None:
                 new_document[date_field] = self._normalize_date(new_document[date_field])
-        self.replace_bad_chars(new_document, "brands_text", "retailers_text")
+        self.replace_bad_chars(new_document, "brands_text", "retailers_text", "title")
         # brands is a list
         new_document["brands"] = self.split_list(new_document["brands_text"], ",")
         new_document["retailers"] = self.split_list(new_document["retailers_text"], ",")
