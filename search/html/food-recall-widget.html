@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr" data-lt-installed="true">
   <head>
     <meta charset="utf-8" />
-    <title>Food Recall</title>
+    <title>Search-a-licious - Open Food Facts</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
@@ -17,7 +17,7 @@
       }
       /* temporary inline styles to test CSS customization */
       /* search bar styling */
-
+      
       /* columns of search-bar must use flex so that we can center things vertically */
       searchalicious-bar {
         position:relative;
@@ -93,7 +93,7 @@
         height: 144px;
         margin: 12px;
       }
-
+     
       searchalicious-results::part(image) {
         object-fit: contain;
         width: 100%;
@@ -150,34 +150,10 @@
       searchalicious-reset-button {
         margin-left: 1rem;
       }
+      searchalicious-bar {
+        display: none;
+      }
     </style>
-    <script lang="javascript">
-      function toggleWidget () {
-        const panel = document.getElementById("recall-widget-panel");
-        const wasHidden = panel.style.getPropertyValue("display") === "none"
-        panel.style.setProperty("display", wasHidden ? "block" : "none");
-        if (wasHidden) {
-          refreshWidget();
-        }
-      }
-
-      function refreshWidget () {
-        const widgetUrl = widgetURL();
-        const widget = document.getElementById("recall-widget");
-        widget.setAttribute("src", widgetUrl);
-        const code = document.getElementById("recall-widget-code").textContent = `
-          <iframe src="${widgetUrl}"
-            width="250" height="750"
-            title="Batons le rappel"
-            frameborder="0" referrerpolicy="strict-origin-when-cross-origin">
-          </iframe>;
-        `;
-      }
-
-      function widgetURL () {
-        return window.location.toString().replace("index.html", "widget.html");
-      }
-    </script>
   </head>
   <body class="products_page">
   <searchalicious-panel-manager>
@@ -193,17 +169,15 @@
               <ul class="title-area">
                 <li class="name">
                   <div style="position: relative; max-width: 292px">
-                    <h1>Food Recall</h1>
+                    <h1>Dernier rappels produits</h1>
                   </div>
                 </li>
               </ul>
-              <section class="top-bar-section">
+              <section class="top-bar-section" style="display:none">
                 <ul class="left" style="margin-right: 2rem">
                   <li class="search-li">
-                    <searchalicious-bar name="off" boost-phrase page-size="24" langs="en,main">
+                    <searchalicious-bar name="off" boost-phrase page-size="5" langs="en,main">
                     </searchalicious-bar>
-                    <searchalicious-button search-name="off"></searchalicious-button>
-                    <searchalicious-reset-button search-name="off"></searchalicious-reset-button>
                   </li>
                 </ul>
               </section>
@@ -217,60 +191,6 @@
             <a class="exit-off-canvas"></a>
             <div class="main block_light">
               <div id="main_column">
-                <div class="block short block_ristreto">
-                  <div class="">
-                    <div class="small-12 filterProducts">
-                      <div class="filterProducts__buttons">
-                        <div>
-                          <searchalicious-count search-name="off"></searchalicious-count>
-                        </div>
-                        <div>
-                          <searchalicious-sort search-name="off" auto-refresh>
-                            <span slot="label">Sort by ▿</span>
-                            <searchalicious-sort-field field="-publication_date">Last updates
-                            </searchalicious-sort-field>
-                            <searchalicious-sort-field field="-sold_end">Lastly sold
-                            </searchalicious-sort-field>
-                            </searchalicious-sort>
-                        </div>
-
-                        <div class="end-block">
-                          <searchalicious-toggle-charts></searchalicious-toggle-charts>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <searchalicious-layout-page search-name="off">
-                  <div slot="col-1">
-                    <searchalicious-facets search-name="off">
-                      <searchalicious-facet-terms search-name="off" name="risk_class"></searchalicious-facet-terms>
-                      <searchalicious-facet-terms search-name="off" name="brands" ></searchalicious-facet-terms>
-                      <searchalicious-facet-terms search-name="off" name="retailers"></searchalicious-facet-terms>
-                      <!--
-                      <searchalicious-facet-terms search-name="off" name="category" show-other="true"></searchalicious-facet-terms>
-                      -->
-                      <searchalicious-facet-terms search-name="off" name="sub_category"></searchalicious-facet-terms>
-                      <searchalicious-facet-terms search-name="off" name="geo_district"></searchalicious-facet-terms>
-                    </searchalicious-facets>
-                    <div style="margin-top: 2em;">
-                      <button onclick="toggleWidget()">Get Widget</button>
-                      <div id="recall-widget-panel" style="display: none;">
-                        <b>Copy this code and insert it in you website</b>
-                        <br>
-                        <code id="recall-widget-code">
-                        </code>
-                        <iframe id="recall-widget" src=""
-                          width="250" height="750"
-                          title="Batons le rappel"
-                          frameborder="0" referrerpolicy="strict-origin-when-cross-origin"
-                        >
-                        </iframe>
-                      </div>
-                    </div>
-                  </div>
-                  <div slot="col-2">
                     <div id="search_results" style="clear: left">
                       <div id="products_tabs_content" class="tabs-content">
                         <div class="tabs content active" id="products_all" style="padding-top: 0">
@@ -307,24 +227,13 @@
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <searchalicious-pages search-name="off">
-                      </searchalicious-pages>
-                    </div>
-                  </div>
-                  <div slot="col-3">
-                    <!-- Graphs inside -->
-                  </div>
-                </searchalicious-layout-page>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    </div>
-  </searchalicious-panel-manager>
-
+ 
   <script src="https://static.openfoodfacts.org/js/dist/modernizr.js"></script>
     <script src="https://static.openfoodfacts.org/js/dist/jquery.js"></script>
     <script src="https://static.openfoodfacts.org/js/dist/jquery-ui.js"></script>

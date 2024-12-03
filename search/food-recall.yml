@@ -19,3 +19,4 @@ services:
     volumes:
       # replace off file
       - ./html/food-recall.html:/opt/search-a-licious/public/index.html
+      - ./html/food-recall-widget.html:/opt/search-a-licious/public/widget.html
