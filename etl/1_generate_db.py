@@ -14,7 +14,7 @@ with open('etl/input/recall.json', 'wb') as f:
 #%%
 # Read off data
 df_off = pd.read_csv('etl/input/en.openfoodfacts.org.products.csv',
-                     usecols=['code', 'product_name', 'brands_tags', 'categories_tags', 'allergens_tags'],
+                     usecols=['code', 'product_name', 'brands_tags', 'categories_tags', 'allergens'],
                      sep='\t', encoding='utf-8', on_bad_lines='skip', nrows=sample)
 #%%
 df_off['off_code'] = df_off['code']
@@ -64,7 +64,7 @@ df_recall_alim = df_recall_alim[df_recall_alim['gtin_valid'] == True]
 
 df_recall_alim.rename(columns={'brands_tags': 'off_brands_tags',
                                'product_name': 'off_product_name',
-                               'allergens_tags': 'off_allergens_tags',
+                               'allergens': 'off_allergens',
                                'categories_tags': 'off_categories_tags'}, inplace=True)
 
 #%%
