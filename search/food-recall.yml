@@ -18,4 +18,4 @@ services:
   search_frontend:
     volumes:
       # replace off file
-      - ./html/food-recall.html:/opt/search-a-licious/public/off.html
+      - ./html/food-recall.html:/opt/search-a-licious/public/index.html

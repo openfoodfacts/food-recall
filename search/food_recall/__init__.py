@@ -16,26 +16,37 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
     # lien_vers_la_liste_des_produits, lien_vers_la_liste_des_distributeurs, lien_vers_affichette_pdf,
     # lien_vers_la_fiche_rappel, rappel_guid, date_publication, libelle, id
     FIELD_TRANSLATION = {
-        "original_id": "numero_fiche",
+        "original_id": "id",
         "version": "numero_version",
         "barcode": "gtin",
+        "title": "modeles_ou_references",
         "publication_date": "date_publication",
+        "original_link": "lien_vers_la_fiche_rappel",
         "sold_start": "date_debut_commercialisation",
         "sold_end": "date_date_fin_commercialisation",
         "geography_text": "zone_geographique_de_vente",
-        "resellers": "distributeurs",
+        "geo_district": "department",
+        "resellers_text": "distributeurs",
         "category": "categorie_produit",
         "sub_category": "sous_categorie_produit",
-        "brands": "marque_produit",
+        "off_brands_tags": "off_brands_tags",
+        "off_categories_tags": "off_categories_tags",
+        "brands_text": "marque_produit",
         "references": "modeles_ou_references",
         "identification": "identification_produits",
         "conditioning": "conditionnements",
+        "images": "liens_vers_les_images",
+        "risk_class": "risque_class",
+        "off_code": "off_code",
     }
     DATE_FIELDS = ["publication_date", "sold_start", "sold_end"]
 
     def _normalize_date(self, date):
         # we jut need to add the T instead of the space
         return date.replace(' ', 'T')
+
+    def split_list(self, data, sep="|"):
+        return [d.strip().lower() for d in data.split(sep)] if data is not None else None
 
     def preprocess(self, document: JSONType) -> FetcherResult:
         # no need to have a deep-copy here
@@ -52,7 +63,10 @@ class RappelConsoPreprocessor(BaseDocumentPreprocessor):
             if new_document[date_field] is not None:
                 new_document[date_field] = self._normalize_date(new_document[date_field])
         # brands is a list
-        new_document["brands"] = [brand.strip().lower() for brand in new_document["brands"].split(",")]
+        new_document["brands"] = self.split_list(new_document["brands_text"], ",")
+        new_document["resellers"] = self.split_list(new_document["resellers_text"], ",")
+        # some lists
+        new_document["images"] = self.split_list(new_document["images"])
         return FetcherResult(status=FetcherStatus.FOUND, document=new_document)
 
 

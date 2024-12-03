@@ -55,6 +55,10 @@
         margin-bottom: 12px;
         height: auto;
       }
+      searchalicious-results::part(data) {
+        text-align: center;
+        padding: .3em;
+      }
       searchalicious-results::part(outer_anchor) {
         border-radius: 8px;
         padding: 0;
@@ -214,9 +218,14 @@
                 <searchalicious-layout-page search-name="off">
                   <div slot="col-1">
                     <searchalicious-facets search-name="off">
-                      <searchalicious-facet-terms search-name="off" name="brands" show-other="true"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="risk_class"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="brands" ></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="resellers"></searchalicious-facet-terms>
+                      <!--
                       <searchalicious-facet-terms search-name="off" name="category" show-other="true"></searchalicious-facet-terms>
-                      <searchalicious-facet-terms search-name="off" name="sub_category" show-other="true"></searchalicious-facet-terms>
+                      -->
+                      <searchalicious-facet-terms search-name="off" name="sub_category"></searchalicious-facet-terms>
+                      <searchalicious-facet-terms search-name="off" name="geo_district"></searchalicious-facet-terms>
                     </searchalicious-facets>
                   </div>
                   <div slot="col-2">
@@ -232,11 +241,22 @@
                                         part="outer_anchor"
                                 >
                                   <div part="infos">
-                                    <div part="data">
-                                      <b>identification: </b>${result.identification}
-                                      <br>
-                                      <b>resselers:</b> ${result.resselers}
+                                    <div part="image-div">
+                                      <img
+                                              loading="lazy"
+                                              part="image"
+                                              src="${result.images[0]}"
+                                              onerror="handleImageError(event)"
+                                      />
                                     </div>
+                                    <div part="data">
+                                      <b>${result.title}</b>
+                                      <br>
+                                      <b>Marque:</b>${result.resellers_text}
+                                      <br>
+                                      <b>Vendu par:</b> ${result.resellers_text}
+                                    </div>
+                                    <div
                                   </div>
                                 </a>
                               </li>

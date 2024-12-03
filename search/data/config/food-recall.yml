@@ -32,9 +32,20 @@ indices:
       category:
         type: keyword
         bucket_agg: true
+      images:
+        type: keyword
       sub_category:
         type: keyword
         bucket_agg: true
+      title:
+        full_text_search: true
+        type: text
+      brands_text:
+        full_text_search: true
+        type: text
+      resellers_text:
+        full_text_search: true
+        type: text
       brands:
         type: keyword
         bucket_agg: true
@@ -44,6 +55,9 @@ indices:
         type: text
       conditioning:
         type: text
+      risk_class:
+        type: keyword
+        bucket_agg: true
       sold_start:
         type: date
       sold_end:
@@ -53,10 +67,13 @@ indices:
       geo_region:
         type: keyword
         bucket_agg: true
-      geo_dept:
+      geo_district:
         type: keyword
         bucket_agg: true
       resellers:
+        type: keyword
+        bucket_agg: true
+      off_code:
         type: keyword
     taxonomy:
       sources: []
