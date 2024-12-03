@@ -109,10 +109,12 @@ risques_encourus = df_recall_depart['risques_encourus'].value_counts()
 # Classify the risques_encourus into 3 categories: 'biological', 'chemical', 'physical'
 # Create a dictionnary with key words to map
 
-key_words = {'bilogical': ['virus', 'bact', 'parasite', 'micro', 'biologique', 'biological'],
+key_words = {'bilogical': ['virus', 'bact', 'parasite', 'micro', 'botulis',
+                           'biologique', 'biological', 'listeria', 'salmonella', 'coli', 'norovirus'],
              'allergen': ['allergen', 'allergène', 'allergi'],
-             'chemical': ['pesticide', 'contaminant', 'mycotoxin', 'metal', 'residue', 'contamination', 'oxyde'],
-             'physical': ['verre', 'plastic', 'foreign', 'metal', 'blessure']}
+             'chemical': ['pesticide', 'contaminant', 'mycotoxin', 'residue', 'contamination', 'oxyde'],
+             'physical': ['verre', 'plastic', 'foreign', 'metal', 'blessure'],
+             'labelling (other)': ['etiqueta', 'label', 'etiquetage', 'etiquette', 'étiquetage']}
 
 # Create a function to classify the risques_encourus
 def classify_risque(risque):
@@ -122,11 +124,17 @@ def classify_risque(risque):
                 return key
     return 'other'
 
+
+df_recall_depart['risques_encourus_tot'] = df_recall_depart['risques_encourus'] + ' ' + df_recall_depart['motif_rappel']
+
 # Apply the function to the risques_encourus column
-df_recall_depart['risque_class'] = df_recall_depart['risques_encourus'].apply(classify_risque)
+df_recall_depart['risque_class'] = df_recall_depart['risques_encourus_tot'].apply(classify_risque)
+
+# delete the risques_encourus_tot column
+df_recall_depart.drop(columns=['risques_encourus_tot'], inplace=True)
 
 # Save file to jsonl
-df_recall_depart['key'] = df_recall_depart['gtin'] + '--' + df_recall_depart['id']
+# df_recall_depart['key'] = df_recall_depart['gtin'] + '--' + df_recall_depart['id']
 df_recall_depart.to_json('etl/output/recall_depart.jsonl', orient='records', lines=True)
 
 #%%
@@ -146,3 +154,10 @@ departments_plot.plot(column='recalls', ax=ax, legend=True)
 # Save the plot
 plt.savefig('etl/output/recalls_per_department.png')
 plt.show()
+
+#%%
+# Get the count per zone_geographique
+geography_summary = df_recall_depart.groupby('zone_geographique_de_vente').size().reset_index(name='recalls')
+
+# Get the count per risque_class
+risque_summary = df_recall_depart.groupby('risque_class').size().reset_index(name='recalls')
